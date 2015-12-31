@@ -1,28 +1,30 @@
-FROM fedora
+FROM buildpack-deps
+MAINTAINER kevineye@gmail.com
 
-RUN dnf install -y -q \
-    alsa-lib-devel \
-    autoconf \
-    automake \
-    avahi-devel \
-    gcc \
-    gcc-c++ \
-    kernel-devel \
-    libconfig-devel \
-    libdaemon-devel \
-    make \
-    openssl \
-    openssl-devel \
-    popt-devel \
-    rpm-build \
-    soxr-devel
+RUN apt-get update \
+ && apt-get install -y \
+    libtool-bin \
+    libdaemon-dev \
+    libasound2-dev \
+    libpopt-dev \
+    libconfig-dev \
+    avahi-daemon \
+    libavahi-client-dev \
+    libpolarssl-dev \
+    libsoxr-dev \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN curl -s -L -o /root/shairport-sync-2.6.tar.gz https://github.com/mikebrady/shairport-sync/archive/2.6.tar.gz \
- && rpmbuild -ta /root/shairport-sync-2.6.tar.gz \
- && rpm -i /root/rpmbuild/RPMS/x86_64/shairport-sync-2.6-1.fc23.x86_64.rpm
+RUN cd /root \
+ && git clone https://github.com/mikebrady/shairport-sync.git \
+ && cd /root/shairport-sync \
+ && git checkout -q tags/2.6 \
+ && autoreconf -i -f \
+ && ./configure --with-alsa --with-pipe --with-avahi --with-ssl=polarssl --with-soxr --with-metadata \
+ && make \
+ && make install
 
-RUN mkdir /var/run/dbus
+COPY start.sh /start
 
 ENV AIRPLAY_NAME Docker
 
-CMD dbus-daemon --system && avahi-daemon -D  && shairport-sync -a $AIRPLAY_NAME
+ENTRYPOINT [ "/start" ]
