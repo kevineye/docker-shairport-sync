@@ -1,27 +1,63 @@
-FROM buildpack-deps
+FROM alpine:edge
 MAINTAINER kevineye@gmail.com
 
-RUN apt-get update \
- && apt-get install -y \
-    libtool-bin \
-    libdaemon-dev \
-    libasound2-dev \
-    libpopt-dev \
-    libconfig-dev \
-    avahi-daemon \
-    libavahi-client-dev \
-    libpolarssl-dev \
-    libsoxr-dev \
- && rm -rf /var/lib/apt/lists/*
+RUN apk -U add \
+        git \
+        build-base \
+        autoconf \
+        automake \
+        libtool \
+        alsa-lib-dev \
+        libdaemon-dev \
+        popt-dev \
+        libressl-dev \
+        soxr-dev \
+        avahi-dev \
+        libconfig-dev \
 
-RUN cd /root \
+ && cd /root \
  && git clone https://github.com/mikebrady/shairport-sync.git \
- && cd /root/shairport-sync \
- && git checkout -q tags/2.8.3 \
+ && cd shairport-sync \
+
  && autoreconf -i -f \
- && ./configure --with-alsa --with-pipe --with-avahi --with-ssl=polarssl --with-soxr --with-metadata \
+ && ./configure \
+        --with-alsa \
+        --with-pipe \
+        --with-avahi \
+        --with-ssl=openssl \
+        --with-soxr \
+        --with-metadata \
  && make \
- && make install
+ && make install \
+
+ && cd / \
+ && apk --purge del \
+        git \
+        build-base \
+        autoconf \
+        automake \
+        libtool \
+        alsa-lib-dev \
+        libdaemon-dev \
+        popt-dev \
+        libressl-dev \
+        soxr-dev \
+        avahi-dev \
+        libconfig-dev \
+ && apk add \
+        dbus \
+        alsa-lib \
+        libdaemon \
+        popt \
+        libressl \
+        soxr \
+        avahi \
+        libconfig \
+ && rm -rf \
+        /etc/ssl \
+        /var/cache/apk/* \
+        /lib/apk/db/* \
+        /root/shairport-sync
 
 COPY start.sh /start
 
