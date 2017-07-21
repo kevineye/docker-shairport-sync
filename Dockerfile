@@ -16,7 +16,7 @@ RUN apk -U add \
         libconfig-dev \
 
  && cd /root \
- && git clone https://github.com/mikebrady/shairport-sync.git \
+ && git clone -b 2.8.3 https://github.com/mikebrady/shairport-sync.git \
  && cd shairport-sync \
 
  && autoreconf -i -f \
