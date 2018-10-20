@@ -8,4 +8,9 @@ dbus-daemon --system
 
 avahi-daemon --daemonize --no-chroot
 
-shairport-sync -m avahi -a "$AIRPLAY_NAME" "$@"
+echo "gomplating..."
+mkdir -p /usr/local/etc
+gomplate -f /shairport-sync.conf.tmpl -o /usr/local/etc/shairport-sync.conf
+echo "done!"
+
+shairport-sync "$@"

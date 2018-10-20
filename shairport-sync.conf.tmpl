@@ -1,0 +1,80 @@
+// General Settings
+general =
+{
+    // The default is "Hostname" -- i.e. the machine's hostname with the first letter capitalised (ASCII only.)
+    // You can use the following substitutions:
+    //		%h for the hostname,
+    //		%H for the Hostname (i.e. with first letter capitalised (ASCII only)),
+    //		%v for the version number, e.g. 3.0 and
+    //		%V for the full version string, e.g. 3.0-OpenSSL-Avahi-ALSA-soxr-metadata-sysconfdir:/etc
+    // Overall length can not exceed 50 characters. Example: "Shairport Sync %v on %H".
+	name = "{{ getenv "AIRPLAY_NAME" "%H" }}";
+//	password = "secret"; // leave this commented out if you don't want to require a password
+//	interpolation = "basic"; // aka "stuffing". Default is "basic", alternative is "soxr". Use "soxr" only if you have a reasonably fast processor.
+//	output_backend = "alsa"; // Run "shairport-sync -h" to get a list of all output_backends, e.g. "alsa", "pipe", "stdout". The default is the first one.
+	mdns_backend = "avahi";
+//	port = 5000; // Listen for service requests on this port
+//	udp_port_base = 6001; // start allocating UDP ports from this port number when needed
+//	udp_port_range = 100; // look for free ports in this number of places, starting at the UDP port base. Allow at least 10, though only three are needed in a steady state.
+//	drift_tolerance_in_seconds = 0.002; // allow a timing error of this number of seconds of drift away from exact synchronisation before attempting to correct it
+//	resync_threshold_in_seconds = 0.050; // a synchronisation error greater than this number of seconds will cause resynchronisation; 0 disables it
+//	ignore_volume_control = "no"; // set this to "yes" if you want the volume to be at 100% no matter what the source's volume control is set to.
+//	volume_range_db = 60 ; // use this advanced setting to set the range, in dB, you want between the maximum volume and the minimum volume. Range is 30 to 150 dB. Leave it commented out to use mixer's native range.
+//	volume_max_db = 0.0 ; // use this advanced setting, which must have a decimal point in it, to set the maximum volume, in dB, you wish to use.
+//		The setting is for the hardware mixer, if chosen, or the software mixer otherwise. The value must be in the mixer's range (0.0 to -96.2 for the software mixer).
+//		Leave it commented out to use mixer's maximum volume.
+//	volume_control_profile = "standard" ; // use this advanced setting to specify how the airplay volume is transferred to the mixer volume.
+//		"standard" makes the volume change more quickly at lower volumes and slower at higher volumes.
+//		"flat" makes the volume change at the same rate at all volumes.
+//	run_this_when_volume_is_set = "/full/path/to/application/and/args"; //	Run the specified application whenever the volume control is set or changed.
+//		The desired AirPlay volume is appended to the end of the command line – leave a space if you want it treated as an extra argument.
+//		AirPlay volume goes from 0 to -30 and -144 means "mute".
+
+//	regtype = "_raop._tcp"; // Use this advanced setting to set the service type and transport to be advertised by Zeroconf/Bonjour. Default is "_raop._tcp".
+//	playback_mode = "stereo"; // This can be "stereo", "mono", "reverse stereo", "both left" or "both right". Default is "stereo".
+//	alac_decoder = "hammerton"; // This can be "hammerton" or "apple". This advanced setting allows you to choose
+//		the original Shairport decoder by David Hammerton or the Apple Lossless Audio Codec (ALAC) decoder written by Apple.
+//	interface = "name"; // Use this advanced setting to specify the interface on which Shairport Sync should provide its service. Leave it commented out to get the default, which is to select the interface(s) automatically.
+
+//	audio_backend_latency_offset_in_seconds = 0.0; // Set this offset to compensate for a fixed delay in the audio back end. E.g. if the output device delays by 100 ms, set this to -0.1.
+//	audio_backend_buffer_desired_length_in_seconds = 0.15; // If set too small, buffer underflow occurs on low-powered machines. Too long and the response time to volume changes becomes annoying. Default is 0.15 seconds in the alsa backend, 0.35 seconds in the pa backend and 1.0 seconds otherwise.
+//	audio_backend_silent_lead_in_time = 2.0; // This optional advanced setting, from 0.0 and 4.0 seconds, sets the length of the period of silence that precedes the start of the audio. The default is the latency, usually 2.0 seconds. Values greater than the latency are ignored. Values that are too low will affect initial synchronisation.
+//	dbus_service_bus = "system"; // The Shairport Sync dbus interface, if selected at compilation, will appear
+//		as "org.gnome.ShairportSync" on the whichever bus you specify here: "system" (default) or "session".
+//	mpris_service_bus = "system"; // The Shairport Sync mpris interface, if selected at compilation, will appear
+//		as "org.gnome.ShairportSync" on the whichever bus you specify here: "system" (default) or "session".
+};
+
+// Advanced parameters for controlling how Shairport Sync runs a play session
+sessioncontrol =
+{
+//	run_this_before_play_begins = "/full/path/to/application and args"; // make sure the application has executable permission. If it's a script, include the shebang (#!/bin/...) on the first line
+//	run_this_after_play_ends = "/full/path/to/application and args"; // make sure the application has executable permission. If it's a script, include the shebang (#!/bin/...) on the first line
+//	wait_for_completion = "no"; // set to "yes" to get Shairport Sync to wait until the "run_this..." applications have terminated before continuing
+//	allow_session_interruption = "no"; // set to "yes" to allow another device to interrupt Shairport Sync while it's playing from an existing audio source
+//	session_timeout = 120; // wait for this number of seconds after a source disappears before terminating the session and becoming available again.
+};
+
+// How to deal with metadata, including artwork
+metadata =
+{
+	enabled = "yes";
+	include_cover_art = "yes";
+//	pipe_name = "/tmp/shairport-sync-metadata";
+//	pipe_timeout = 5000; // wait for this number of milliseconds for a blocked pipe to unblock before giving up
+	socket_address = "239.0.0.0";
+	socket_port = 9999;
+	// the maximum packet size for any UDP metadata. This will be clipped to be between 500 or 65000. The default is 500.
+	socket_msglength = {{ getenv "META_PKT_SIZE" "500" }}; 
+};
+
+// Diagnostic settings. These are for diagnostic and debugging only. Normally you sould leave them commented out
+diagnostics =
+{
+	// disable_resend_requests = "no"; // set this to yes to stop Shairport Sync from requesting the retransmission of missing packets. Default is "no".
+	statistics = "no"; // set to "yes" to print statistics in the log
+	log_verbosity = 1; // "0" means no debug verbosity, "3" is most verbose.
+	// log_show_time_since_startup = "no"; // set this to yes if you want the time since startup in the debug message -- seconds down to nanoseconds
+	// log_show_time_since_last_message = "no"; // set this to yes if you want the time since the last debug message in the debug message -- seconds down to nanoseconds
+	// drop_this_fraction_of_audio_packets = 0.0; // use this to simulate a noisy network where this fraction of UDP packets are lost in transmission. E.g. a value of 0.001 would mean an average of 0.1% of packets are lost, which is actually quite a high figure.
+};
