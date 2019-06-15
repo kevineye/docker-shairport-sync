@@ -1,0 +1,28 @@
+FROM alpine:3.8 AS build-base
+
+RUN apk --no-cache add \
+    git \
+    build-base \
+    autoconf \
+    automake \
+    libtool \
+    libdaemon-dev \
+    popt-dev \
+    libressl-dev \
+    libconfig-dev \
+    netcat-openbsd
+    # alsa-lib-dev \
+    # soxr-dev \
+    # avahi-dev \
+
+FROM build-base AS build
+
+WORKDIR /root/shairport-sync
+RUN git clone https://github.com/mikebrady/shairport-sync-metadata-reader.git .
+RUN autoreconf -i -f
+
+RUN ./configure
+RUN make
+RUN make install
+
+CMD [ "/usr/local/bin/shairport-sync-metadata-reader" ]
