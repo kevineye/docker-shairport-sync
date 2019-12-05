@@ -1,4 +1,4 @@
-FROM alpine:3.9 AS build-base
+FROM alpine:3.10.3 AS build-base
 
 RUN apk --no-cache add \
     git \
@@ -47,7 +47,7 @@ RUN ./configure \
 RUN make
 RUN make install
 
-FROM alpine:3.9 AS shairport
+FROM alpine:3.10.3 AS shairport
 
 RUN apk --no-cache add \
     dbus \
